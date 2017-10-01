@@ -1,3 +1,6 @@
-# Installation d'Achlinux sur un PC Portable
+# It's my archlinux setup
 
-Ceci est un tutoriel sur l'installation et la configuration d'un Archlinux sur un pc Portable.
+# SOON
+
+# C'est mon setup d'archlinux
+#BIENTOT
