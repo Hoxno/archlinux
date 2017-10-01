@@ -31,7 +31,7 @@ Patitionnement du disque pour une installation en dual boot avec windows 10.
     
 
 | Nom de la Partition | Taille | Format | Type |
-| :----------- | :------: | ------------: |
+| :----------- | :------: | :-------: | :------|
 | /dev/sda1 | 500M | ntfs | Boot MS |
 | /dev/sda2 | 600G | ntfs | Partition Windows 10 |
 | /dev/sda3 | 512M | ext2 | Grub |
