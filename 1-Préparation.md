@@ -1,3 +1,4 @@
+****
 1. __Préparation avant l'installation__
 -----------------------------------
 
@@ -35,7 +36,7 @@ Patitionnement du disque pour une installation en dual boot avec windows 10.
 | /dev/sda1 | 500M | ntfs | Boot MS |
 | /dev/sda2 | 600G | ntfs | Partition Windows 10 |
 | /dev/sda3 | 512M | ext2 | Grub |
-| /dev/sda4 | 400G | ext4 | Partion Linux |
+| /dev/sda4 | 400G | ext4 | Partition Linux |
 * Formater les partitions
 
 

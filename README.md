@@ -3,4 +3,4 @@
 # SOON
 
 # C'est mon setup d'archlinux
-#BIENTOT
+# BIENTOT

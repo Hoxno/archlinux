@@ -21,14 +21,15 @@ On édite le ficher `/etc/pacman.d/mirrorlist` :
 
     $nano /etc/pacman.d/mirrorlist
 
-ensuite avec une combinaison de touche ` ALT + R`. On netre dans un premier temps `Server` (sans les guillemets). Et ensuite `#Server`.
+ensuite avec une combinaison de touche ` ALT + R`. On mettra dans un premier temps `Server` (sans les guillemets). Et ensuite `#Server`.
 
 * __Installation des paquets de base__
 
-
-    $pacstrap /mnt base base-devel
-    $pacstrap /mnt zip unzip p7zip vim mc alsa-utils syslog-ng mtools dosfstools
-    $lsb-release ntfs-3g exfat-utils
+```
+$pacstrap /mnt base base-devel
+$pacstrap /mnt zip unzip p7zip vim mc alsa-utils syslog-ng mtools dosfstools
+$lsb-release ntfs-3g exfat-utils
+```
 
 * __Configuration du sytème__
 
@@ -84,10 +85,10 @@ Générer le fichier de configuration principal en utilisent l'outil `grub-confi
 
 * Installation de NetworkManager
 
-
-    $pacman -Syy networkmanager
-    $systemctl enable NetworkManager
-    
+```
+$pacman -Syy networkmanager
+$systemctl enable NetworkManager
+```    
 Installer le paquet `dialog` et `wpa_supplicant`
 
     $pacman -S dialog wpa_supplicant
