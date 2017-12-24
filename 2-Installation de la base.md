@@ -1,106 +1,109 @@
-2. __Instalation du sytème de base__
--------------------------------------
+# __2. Instalation du sytème de base__
 
+## __Selection du miroir__
 
-* __Selection du miroir__
+Avant l'installation, il peut être intéressant de modifier `/etc/pacman.d/mirrorlist` pour bénéficier d'un mirroir plus proche de chez vous et plus rapide.
+Pour la selection des mirrors il y a différente méthode ma préferer est la deuxième.
 
-__Première méthode__
+## __Première méthode__
 
-Commençons par créer un fichier backup
+_Le package ```pacman``` met à disposition un script bash, `/usr/bin/rankmirrors`, dans lequel peut être utilisé afin de classer les mirroirs diponibles en terme de rapidité._
 
+* Commençons par créer un fichier de backup de /usr/bin/rankmirrors :
 
-    $cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
+        cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 
-Et on commente tous les lignes commencent par Server:
+* Editons maintenant le fichier backup. Nous allons décommenter TOUS les miroirs afin que rankmirrors puisse les tester. Pour se faire, sed s'avère très utile.
 
-    $sed -s 's/^Server/#Server' /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
+        sed -s 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
 
-__Deuxième méthode__
+* Pour finir, nous allons laisser ```rankmirrors``` trouve les 10 meilleurs mirroirs, et écrire le résultat directement dans /etc/pacman.d/mirrorlist
 
-On édite le ficher `/etc/pacman.d/mirrorlist` :
+        rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
 
-    $nano /etc/pacman.d/mirrorlist
+## __Deuxième méthode__
 
-ensuite avec une combinaison de touche ` ALT + R`. On mettra dans un premier temps `Server` (sans les guillemets). Et ensuite `#Server`.
+* On édite le ficher `/etc/pacman.d/mirrorlist` :
 
-* __Installation des paquets de base__
+        nano /etc/pacman.d/mirrorlist
 
-```
-$pacstrap /mnt base base-devel
-$pacstrap /mnt zip unzip p7zip vim mc alsa-utils syslog-ng mtools dosfstools
-$lsb-release ntfs-3g exfat-utils
-```
+* ensuite avec une combinaison de touche `ALT + R`. On mettra dans un premier temps `Server` (sans les guillemets). Et ensuite `#Server`.
 
-* __Configuration du sytème__
+## __Installation des paquets de base__
 
-Générer le fichier `/etc/fstab`
+* Il suffit d'utiliser le script `pacstrap` en lui indiquant le dossier correspondant à la racine du système suivi des paquets ou groupes à installer (séparés par un espace). Pour le système de base :
 
-    $genfstab -U -p /mnt >> /mnt/etc/fstab
+        pacstrap /mnt base base-devel
+        pacstrap /mnt zip unzip p7zip vim mc alsa-utils syslog-ng mtools dosfstools fish lsb-release ntfs-3g exfat-utils wireless_tools dialog wpa_supplicant wpa_actiond ifpluged sudo git ntp cronie wget
 
-Chrooter dans le nouveau système:
+### __Configuration du sytème__
 
-    $arch-chroot /mnt
+Pour une configuration de base:
 
-Renseignez le _nom de la machine_ dans le fichier `/etc/hostname`:
+* Générer le fichier `/etc/fstab`
 
-    $echo NomDeLaMachine > /etc/hostname
+        $genfstab -U -p /mnt >> /mnt/etc/fstab
 
-Editer le fichier `/etc/vconsole.conf` afin d'y spécifier la dispotion du clavier que vous souhaitez utiliser:
+* Chrooter dans le nouveau système:
 
-    $echo KEYMAP=fr > /etc/vconsole.conf
+        $arch-chroot /mnt
 
-Ajoutez le nom de la locale au fichier `etc/locale.conf`:
+* Renseignez le _nom de la machine_ dans le fichier `/etc/hostname`:
 
-    $echo LANG="fr_FR.UTF-8" > /etc/locale.conf
-Editer le fichier `/etc/locale.gen`
+        $echo NomDeLaMachine > /etc/hostname
 
-    $nano /etc/locale.gen
-et décommenter votre locale puis executez la commande suivante
+* Editer le fichier `/etc/vconsole.conf` afin d'y spécifier la dispotion du clavier que vous souhaitez utiliser:
 
-    $locale-gen
-Vous pouvez spécifier la locale pour la session courante:
+        $echo KEYMAP=fr > /etc/vconsole.conf
 
-    $export LANG=fr_FR.UTF-8
-Créer un lien symbolique `/etc/localtime` afin de choisir votre _fuseau horaire_, par exemple pour la France:
+* Ajoutez le nom de la locale au fichier `etc/locale.conf`:
 
-    $ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
-Configurer `/etc/mkinitcpio.conf` et créez les RAMdisks initiaux avec:
+        $echo LANG="fr_FR.UTF-8" > /etc/locale.conf
 
-    $mkinitcpio -p linux
+* Editer le fichier `/etc/locale.gen`
 
-Définissez un mot de passe pour le __root__:
+        $nano /etc/locale.gen
 
-    $passwd root
-* __Installation d'un bootloader__
+* et décommenter votre locale puis executez la commande suivante
 
-Il faut installer les paquets `grub` et `os-prober` pour le dualboot:
+        $locale-gen
 
-    $pacman -S grub os-prober
-Pour installer sur le disque `/dev/sda`:
+* Vous pouvez spécifier la locale pour la session courante:
 
-    $grub-install --no-floppy --recheck /dev/sda
-Générer le fichier de configuration principal en utilisent l'outil `grub-config` pour générer `grub.cfg`
+        $export LANG=fr_FR.UTF-8
 
-    $grub-mkconfig -o /boot/grub/grub.cfg
+* Créer un lien symbolique `/etc/localtime` afin de choisir votre _fuseau horaire_, par exemple pour la France:
 
-* Installation de NetworkManager
+        $ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
 
-```
-$pacman -Syy networkmanager
-$systemctl enable NetworkManager
-```    
-Installer le paquet `dialog` et `wpa_supplicant`
+* Configurer `/etc/mkinitcpio.conf` et créez les RAMdisks initiaux avec:
 
-    $pacman -S dialog wpa_supplicant
+        $mkinitcpio -p linux
 
-* __Démonter le tout__
+* Définissez un mot de passe pour le __root__:
 
-Sortez de l'environement __chroot__:
+        $passwd root
 
-    $exit
-Puis,
+## __Installation d'un bootloader__
 
-    $umount -R /mnt
-Vous pouvez redémmarer l'ordinateur
+* Il faut installer les paquets `grub` et `os-prober` pour le dualboot:
 
-    $reboot
+        $pacman -S grub os-prober
+* Pour installer sur le disque `/dev/sda`:
+
+        $grub-install --no-floppy --recheck /dev/sda
+* Générer le fichier de configuration principal en utilisent l'outil `grub-config` pour générer `grub.cfg`
+
+        $grub-mkconfig -o /boot/grub/grub.cfg
+
+## __Démonter le tout__
+
+* Sortez de l'environement __chroot__:
+
+        $exit
+    Puis,
+
+        $umount -R /mnt
+    Vous pouvez redémmarer l'ordinateur
+
+        $reboot
