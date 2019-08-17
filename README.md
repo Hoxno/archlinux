@@ -9,15 +9,15 @@ BEGIN
 
 [2 - Installation de la base](#2.installation-du-systeme-de-base)
 
-[3 - Installation des differents paquets]()
+[3 - Configurations du systèmes](#3-configuration-du-système)
 
-[4 - Configuration]()
+[4 - Configuration](#4-configuration)
 
 ## Introduction
 
 Le but de ce tutoriel est de m'aider à installer archlinux sur mon environement de travailler et peut par la suite de créer un script d'installation. Ce tutorriel est basé sur le travaille de [Fréderic Bezies](https://github.com/FredBezies/arch-tuto-installation).
 
-# 1. Préparation
+#1. Préparation
 
 * __Disposition du clavier__
 
@@ -57,7 +57,7 @@ Pour un dique dur ou un ssd
 
 Pour le d'un ssd nvme
 
-# 2. Instalation du sytème de base
+#2. Instalation du sytème de base
 
 ## __Selection du miroir__
 
@@ -93,7 +93,7 @@ _Le package ```pacman``` met à disposition un script bash, `/usr/bin/rankmirror
 * Il suffit d'utiliser le script `pacstrap` en lui indiquant le dossier correspondant à la racine du système suivi des paquets ou groupes à installer (séparés par un espace). Pour le système de base :
 
         pacstrap /mnt base base-devel 
-        pacstrap /mnt zip unzip p7zip vim mc alsa-utils syslog-ng mtools dosfstools fish lsb-release ntfs-3g exfat-utils wireless_tools dialog wpa_supplicant wpa_actiond ifplugd sudo git ntp cronie wget
+        pacstrap /mnt zip unzip p7zip vim mc alsa-utils syslog-ng mtools dosfstools fish lsb-release ntfs-3g exfat-utils wireless_tools dialog wpa_supplicant wpa_actiond ifplugd sudo git ntp cronie wget curl
 
 ### __Configuration du sytème__
 
@@ -157,7 +157,7 @@ Pour une configuration de base:
 
         $grub-mkconfig -o /boot/grub/grub.cfg
 
-##__(Version EFI)__
+##__(Version UEFI)__
 
 ## __Démonter le tout__
 
@@ -171,21 +171,15 @@ Pour une configuration de base:
 
         $reboot
 
-# __3. Configuration du système__
+#3. Configuration du système
 
 Une fois que le système redémarre, on se conecte en __root__.
 
 * On se connecte d'abord à internet avec la commande
 
         wifi-menu
-* Si on veut que le système se connecter automatiquement à internet au démmarage, il suffit d'utiliser la commande
 
-        netctl enable 'profile'
-* Pour connaître le profile, j'utilise la commande
-
-        netctl list
-
-* Création d'un compte utilisateur
+* Création d'un compte utilisateur<br />
 
     Avant d'installer nos logiciels préferer, nous allons d'abord créé un compte utilisateur avec la commande suivante:
 
@@ -320,3 +314,75 @@ Une fois que le système redémarre, on se conecte en __root__.
 * Outils système
 
         trizen -S spacer
+
+#4. Configuration
+
+## Configuration zsh
+
+1. Installation de oh-my-zsh
+
+Premièrement on télécharger `oh-my-zsh`.
+
+    sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+2. Installation d'un thème bullet-train
+
+On commence par télécharger le thème
+
+Ensuite pour activer le thème on va dans le fichier `.zshrc`, à ligne ``.
+
+
+
+
+## Configuration d'un environement de dev
+
+1. Installation de php
+
+On commence par installer composer, php et quelque extension de php.
+
+    pacaur -S composer php php-{gd,intl,mcrypt,sqlite} phpdox
+
+Pour la configuration de php on va décommenter les ligne suivant dans le fichier /etc/php/php.ini
+
+    extension=curl.so
+    extension=gd.so
+    extension=iconv.so
+    extension=intl.so
+    extension=mcrypt.so
+    extension=pdo_sqlite.so
+    extension=sqlite3.so
+
+Et ont va aussi modifier dans ce même fichier, pour avoir les erreurs lors du dévelloppement
+
+    display_errors=On
+Une dernière étape pour la configuration de php c'est d'installer xdebug
+
+    pacaur -S xdebug
+Pour activer xdebug il faut décommenter tous les lignes dans le fichier `/etc/php/conf.d/xdebug.ini`
+
+    zend_extension=xdebug.so
+    xdebug.remote_enable=on
+    xdebug.remote_host=127.0.0.1
+    xdebug.remote_port=9000
+    xdebug.remote_handler=dbgp
+
+2. Installation de mariadb
+
+On commence par installer mariadb
+
+Sur archlinux il est conseiller d'installer `mariadb`.
+
+    pacaur -S mariadb
+
+Ensuite demarra le service mariadb
+
+    sudo systemctl start maridb
+
+Il y a une étape importante à faire qui est de sécuriser mariadb
+
+    mysql_secure_installation
+
+Pour que mariadb puisse communiquer avec php, il faut aller dans le fichier /etc/php/php.ini et décommenter les lignes
+
+    extension=pdo_mysql.so
+    extension=mysqli.so
