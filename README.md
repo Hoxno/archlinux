@@ -17,7 +17,7 @@ BEGIN
 
 Le but de ce tutoriel est de m'aider à installer archlinux sur mon environement de travailler et peut par la suite de créer un script d'installation. Ce tutorriel est basé sur le travaille de [Fréderic Bezies](https://github.com/FredBezies/arch-tuto-installation).
 
-#1. Préparation
+# 1. Préparation
 
 * __Disposition du clavier__
 
@@ -57,7 +57,7 @@ Pour un dique dur ou un ssd
 
 Pour le d'un ssd nvme
 
-#2. Instalation du sytème de base
+# 2. Instalation du sytème de base
 
 ## __Selection du miroir__
 
@@ -171,7 +171,7 @@ Pour une configuration de base:
 
         $reboot
 
-#3. Configuration du système
+# 3. Configuration du système
 
 Une fois que le système redémarre, on se conecte en __root__.
 
@@ -315,7 +315,7 @@ Une fois que le système redémarre, on se conecte en __root__.
 
         trizen -S spacer
 
-#4. Configuration
+# 4. Configuration
 
 ## Configuration zsh
 
