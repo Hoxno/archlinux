@@ -5,15 +5,38 @@ Sommaire
 BEGIN
 -->
 
-[1 - Préparation](#1.préparation)
+0. [Introduction](#introduction)
+1. [Préparation](#1-préparation)
+   1. [Partitionnement du disque ]()
+        1. [En mode Bios]()
+        1. [En mode UEFI]()
+1. [Installation de la base](#2-instalation-du-sytème-de-base)
+   1. [Selection du miroir]()
+        1. [Première méthode (plus simple)]()
+        1. [Deuxième méthode]()
+        1. [Installation des paquets de base]()
+        1. [Configuration du sytème]()
+        1. [Installation d'un bootloader]()
+           1. [En version Bios]()
+           1. [En version UEFI]()
+        1. [Redémmarage]()
+1. [Configurations du systèmes](#3-configuration-du-système)
+    1. []()
+    1. []()
+    1. []()<br/>
+       1. []()
+       1. []()
+       1. []()
+    1. []()
+    1. []()
+1. [Configuration](#4-configuration)
+    1. []()
+    1. []()
+    1. []()
+    1. []()
+    1. []()
 
-[2 - Installation de la base](#2.installation-du-systeme-de-base)
-
-[3 - Configurations du systèmes](#3-configuration-du-système)
-
-[4 - Configuration](#4-configuration)
-
-## Introduction
+# Introduction
 
 Le but de ce tutoriel est de m'aider à installer archlinux sur mon environement de travailler et peut par la suite de créer un script d'installation. Ce tutorriel est basé sur le travaille de [Fréderic Bezies](https://github.com/FredBezies/arch-tuto-installation).
 
@@ -32,17 +55,29 @@ Le but de ce tutoriel est de m'aider à installer archlinux sur mon environement
         wifi-menu
 
 ## __Partitionnement du disque__
-Pour un dique dur ou un ssd
+
+Le partitionnement peut être fait avant de démarrer sur le live (avec gparted, par exemple), mais il peut aussi être fait à ce moment à l'aide de l'un des différents utilitaires disponibles : fdisk, parted, cfdisk, etc.
+
+## Cas d'un dual boot
+
+__Pour un dique dur ou un ssd__
+
 * Patitionnement du disque pour une installation en dual boot avec windows 10.
+
+| Nom de la Partition | Taille | Format | Type |
+| :----------- | :------: | :-------: | :------|
+| /dev/sda1 | 500M | ntfs | Boot MS |
+| /dev/sda2 | 600G | ntfs | Partition Windows 10 |
+| /dev/sda3 | 512M | ext2 | Grub |
+| /dev/sda4 | 400G | ext4 | Partition Linux |
+
+* Pour une machine en demarrage en bios, lancer la commande:
 
         $cfdisk
 
-    | Nom de la Partition | Taille | Format | Type |
-    | :----------- | :------: | :-------: | :------|
-    | /dev/sda1 | 500M | ntfs | Boot MS |
-    | /dev/sda2 | 600G | ntfs | Partition Windows 10 |
-    | /dev/sda3 | 512M | ext2 | Grub |
-    | /dev/sda4 | 400G | ext4 | Partition Linux |
+* Pour une machine en demarrage UEFI, lancer la commande:
+
+        $cgdisk (nom du volume)
 
 * Ensuite on va formater nos partition qu'on a créé précedement
 
@@ -55,7 +90,56 @@ Pour un dique dur ou un ssd
         $mkdir /mnt/boot
         $mount /dev/sda3 /mnt/boot
 
-Pour le d'un ssd nvme
+__Pour le d'un ssd nvme__
+
+## Cas d'un boot seul
+
+__Pour un dique dur ou un ssd__
+
+| Nom de la Partition | Taille | Format | Type |
+| :----------- | :------: | :-------: | :------|
+| /dev/sda1 | 300M | vfat | /boot/efi |
+| /dev/sda2 | 8G | swapon | swap |
+| /dev/sda3 | 30G | ext4 | / |
+| /dev/sda4 | le reste | ext4 | /home |
+
+* Pour une machine en demarrage en bios, lancer la commande:
+
+        $cfdisk
+
+* Pour une machine en demarrage UEFI, lancer la commande:
+
+        $cgdisk (nom du volume)
+
+__Pour une table de partition MBR__
+
+* Ensuite on va formater nos partition qu'on a créé précedement
+
+        $mkfs.ext2 /dev/sda1
+        $mkfs.ext4 /dev/sda3
+        $mkfs.ext4 /dev/sda4
+
+* La partition swap est crée en utilisan ```mkswap```
+
+        $mkswap /dev/sda2
+
+__Pour une table de partition GPT__
+
+Pour une table GPT, le formatage est le même que pour une table MBR.
+
+        $mkfs.vfat -F32 /dev/sda1
+__Montage des partitions__
+
+Il faut monter les partitions précedement créées sous le dossier /mnt afin d'y installer le système. On utilise la commande ```mount```:
+
+        $mount /dev/sda3 /mnt
+        # Pour créer le dossier utilisateur, il nous faut monter la partition /home
+        $mkdir /mnt/home && mount /dev/sda4 /mnt/home
+
+La partition swap doit être également activé pour être détecté lors de la création du fstab:
+
+        $swapon /dev/sda2
+
 
 # 2. Instalation du sytème de base
 
@@ -64,7 +148,15 @@ Pour le d'un ssd nvme
 Avant l'installation, il peut être intéressant de modifier `/etc/pacman.d/mirrorlist` pour bénéficier d'un mirroir plus proche de chez vous et plus rapide.
 Pour la selection des mirrors il y a différente méthode ma préferer est la deuxième.
 
-## __Première méthode__
+## __Première méthode__ (plus simple)
+
+* On édite le ficher `/etc/pacman.d/mirrorlist` :
+
+        nano /etc/pacman.d/mirrorlist
+
+* ensuite avec une combinaison de touche `ALT + R`. On mettra dans un premier temps `Server` (sans les guillemets). Et ensuite `#Server`.
+
+## __Deuxième méthode__
 
 _Le package ```pacman``` met à disposition un script bash, `/usr/bin/rankmirrors`, dans lequel peut être utilisé afin de classer les mirroirs diponibles en terme de rapidité._
 
@@ -79,14 +171,6 @@ _Le package ```pacman``` met à disposition un script bash, `/usr/bin/rankmirror
 * Pour finir, nous allons laisser ```rankmirrors``` trouve les 10 meilleurs mirroirs, et écrire le résultat directement dans /etc/pacman.d/mirrorlist
 
         rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
-
-## __Deuxième méthode__
-
-* On édite le ficher `/etc/pacman.d/mirrorlist` :
-
-        nano /etc/pacman.d/mirrorlist
-
-* ensuite avec une combinaison de touche `ALT + R`. On mettra dans un premier temps `Server` (sans les guillemets). Et ensuite `#Server`.
 
 ## __Installation des paquets de base__
 
@@ -139,7 +223,7 @@ Pour une configuration de base:
 
         $mkinitcpio -p linux
 
-* Définissez un mot de passe pour le __root__:
+* Définissez un mot de passe __root__:
 
         $passwd root
 
@@ -159,7 +243,7 @@ Pour une configuration de base:
 
 ##__(Version UEFI)__
 
-## __Démonter le tout__
+## __Redémmarage__
 
 * Sortez de l'environement __chroot__:
 
@@ -331,16 +415,13 @@ On commence par télécharger le thème
 
 Ensuite pour activer le thème on va dans le fichier `.zshrc`, à ligne ``.
 
-
-
-
 ## Configuration d'un environement de dev
 
 1. Installation de php
 
 On commence par installer composer, php et quelque extension de php.
 
-    pacaur -S composer php php-{gd,intl,mcrypt,sqlite} phpdox
+    trizen -S composer php php-{gd,intl,mcrypt,sqlite} phpdox
 
 Pour la configuration de php on va décommenter les ligne suivant dans le fichier /etc/php/php.ini
 
@@ -372,15 +453,15 @@ On commence par installer mariadb
 
 Sur archlinux il est conseiller d'installer `mariadb`.
 
-    pacaur -S mariadb
+    $trizen -S mariadb
 
 Ensuite demarra le service mariadb
 
-    sudo systemctl start maridb
+    $sudo systemctl start maridb
 
 Il y a une étape importante à faire qui est de sécuriser mariadb
 
-    mysql_secure_installation
+    $sudo mysql_secure_installation
 
 Pour que mariadb puisse communiquer avec php, il faut aller dans le fichier /etc/php/php.ini et décommenter les lignes
 
