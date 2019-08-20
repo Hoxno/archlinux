@@ -79,9 +79,9 @@ __Pour un dique dur ou un ssd__
 
         $cfdisk
 
-* Pour une machine en demarrage UEFI, lancer la commande:
+* Pour une machine en demarrage UEFI, lancer la commande ```cgdisk (nom du volume)```:
 
-        $cgdisk (nom du volume)
+        $cgdisk /dev/sda1
 
 * Ensuite on va formater nos partition qu'on a créé précedement
 
@@ -95,6 +95,34 @@ __Pour un dique dur ou un ssd__
         $mount /dev/sda3 /mnt/boot
 
 __Pour le d'un ssd nvme__
+
+* Patitionnement du disque pour une installation en dual boot avec windows 10.
+
+| Nom de la Partition | Taille | Format | Type |
+| :----------- | :------: | :-------: | :------|
+| /dev/nvme0n1p1 | 500M | ntfs | Boot MS |
+| /dev/nvme0n1p2 | 600G | ntfs | Partition Windows 10 |
+| /dev/nvme0n1p4 | 512M | ext2 | Grub |
+| /dev/nvme0n1p4 | 400G | ext4 | Partition Linux |
+
+* Pour une machine en demarrage en bios, lancer la commande:
+
+        $cfdisk
+
+* Pour une machine en demarrage UEFI, lancer la commande ```cgdisk (nom du volume)```:
+
+        $cgdisk /dev/nvme0n1
+
+* Ensuite on va formater nos partition qu'on a créé précedement
+
+        mkfs.ext2 /dev/nvme0n1p3
+        mkfs.ext4 /dev/nvme0n1p4
+
+* Montage des partitions
+
+        $mount /dev/nvme0n1p4 /mnt
+        $mkdir /mnt/boot
+        $mount /dev/sdanvme0n1p3 /mnt/boot
 
 ## Cas d'un boot seul
 
@@ -111,9 +139,9 @@ __Pour un dique dur ou un ssd__
 
         $cfdisk
 
-* Pour une machine en demarrage UEFI, lancer la commande:
+* Pour une machine en demarrage UEFI, lancer la commande ```cgdisk (nom du volume)```:
 
-        $cgdisk (nom du volume)
+        $cgdisk /dev/sda1
 
 __Pour une table de partition MBR__
 
@@ -143,6 +171,66 @@ Il faut monter les partitions précedement créées sous le dossier /mnt afin d'
 La partition swap doit être également activé pour être détecté lors de la création du fstab:
 
         $swapon /dev/sda2
+
+__Pour le d'un ssd nvme__
+
+| Nom de la Partition | Taille | Format | Type |
+| :----------- | :------: | :-------: | :------|
+| /dev/nvme0n1p1 | 300M | vfat | /boot/efi |
+| /dev/nvme0n1p2 | 8G | swapon | swap |
+| /dev/nvme0n1p3 | 30G | ext4 | / |
+| /dev/nvme0n1p4 | le reste | ext4 | /home |
+
+* Pour une machine en demarrage en bios, lancer la commande:
+
+        $cfdisk
+
+* Pour une machine en demarrage UEFI, lancer la commande:
+
+        $cgdisk (nom du volume)
+
+__Pour une table de partition MBR__
+
+* Ensuite on va formater nos partition qu'on a créé précedement
+
+        $mkfs.ext2 /dev/nvme0n1p1
+        $mkfs.ext4 /dev/nvme0n1p3
+        $mkfs.ext4 /dev/nvme0n1p4
+
+* La partition swap est crée en utilisan ```mkswap```
+
+        $mkswap /dev/nvme0n1p2
+
+__Pour une table de partition GPT__
+
+Pour une table GPT, le formatage est le même que pour une table MBR.
+
+        $mkfs.vfat -F32 /dev/nvme0n1p1
+__Montage des partitions__
+
+* Pour un ssd ou disque dur
+
+Il faut monter les partitions précedement créées sous le dossier /mnt afin d'y installer le système. On utilise la commande ```mount```:
+
+        $mount /dev/sda3 /mnt
+        # Pour créer le dossier utilisateur, il nous faut monter la partition /home
+        $mkdir /mnt/home && mount /dev/sda4 /mnt/home
+
+La partition swap doit être également activé pour être détecté lors de la création du fstab:
+
+        $swapon /dev/sda2
+
+* Pour un disque SSD NVME
+
+l faut monter les partitions précedement créées sous le dossier /mnt afin d'y installer le système. On utilise la commande ```mount```:
+
+        $mount /dev/nvme0n1p3 /mnt
+        # Pour créer le dossier utilisateur, il nous faut monter la partition /home
+        $mkdir /mnt/home && mount /dev/nvme0n1p4 /mnt/home
+
+La partition swap doit être également activé pour être détecté lors de la création du fstab:
+
+        $swapon /dev/nvme0n1p2
 
 
 # 2. Instalation du sytème de base
@@ -298,15 +386,17 @@ Une fois que le système redémarre, on se conecte en __root__.
         cd trizen-git
         makepkg -si
 
+Et maintenant pour le reste du tutoriel, je vais utiliser trizen au lieu de paman pour installer les logicielles et drivers.
+
 ## Installation des plugins multimédia
 
 * On va installer l'ensemble des greffons gstreamer qui nous donneront accès aux fichiers multimédias.
 
-        pacman -S gst-plugins-{base,good,bad,ugly} gst-libav
+        $trizen -S gst-plugins-{base,good,bad,ugly} gst-libav
 
 * Installation de Xorg
 
-        pacman -S xorg-{server,xinit,apps} xf86-input-{mouse,keyboard,libinput} xdg-user-dirs
+        trizen -S xorg-{server,xinit,apps} xf86-input-{mouse,keyboard,libinput} xdg-user-dirs
 
 ## Installation des drivers
 
@@ -316,38 +406,28 @@ Une fois que le système redémarre, on se conecte en __root__.
 
 * En suite on écrit:
 
-        alsactl-store
+        alsactl store
     Pour que la configuration d'alsamixer soit conserver.
 
 ### Imprimantes
 
 * Dans mon cas c'est une imprimante hp, donc:
 
-        pacman -S cups cups-pdf hplip python-pyqt5
+        trizen -S cups cups-pdf hplip python-pyqt5
 
 ### Installation des pilotes graphiques
 
-* Comme c'est une installation pour un pc portable qui comporte la technologie optimus alors, on a installer bumblebee
+* Installation des pilote intel
 
-        pacman -S intel-dri xf86-video-intel bumblebee bbswitch primus lib32-primus nvidia nvidia-utils lib32-nvidia-utils lib32-intel-dri opencl-nvidia lib32-virtualgl virtualgl lib32-primus
-
-### Installation du pilote pour la souris
-
-* Pour une souris corsair, je vais installer le paquet ckb
-
-        trizen -S qt5-base zlib ckb-next-git
-* Ensuite
-
-        sudo systemctl start ckb-daemon.service
-        sudo systemctl enable ckb-daemon.service
+        trizen -S intel-dri xf86-video-intel lib32-intel-dri
 
 ### Installation des polices
 
-* C'est une ensemble de police à installer
+* C'est une ensemble de polices à installer
 
-        pacman -S ttf-{bitstream-vera,liberation,freefont,dejavu,roboto,cheapskate,arphic-uming,baekmuk,font-awesome}
-        pacman -S xorg-fonts-type1 sdl_ttf gsfonts artwiz-fonts
-        pacman -S font-{bh-ttf,bitstream-speedo}
+        trizen -S ttf-{bitstream-vera,liberation,freefont,dejavu,roboto,cheapskate,arphic-uming,baekmuk,font-awesome}
+        trizen -S xorg-fonts-type1 sdl_ttf gsfonts artwiz-fonts
+        trizen -S font-{bh-ttf,bitstream-speedo}
 
 ## Installation d'un environement de bureau
 
@@ -357,8 +437,7 @@ Une fois que le système redémarre, on se conecte en __root__.
 
 * Ensuite on installer notre écran de connexion
 
-        pacman -S lightdm lightdm-gtk-greeter
-        pacaur -S lightdm-gtk-greeter-settings
+        trizen -S lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
 
 * Pour avoir le bon agencement clavier dès la saisie du premier caractère du mot de passe, il faut entrer la commande suivante avant de lancer pour la première fois lightdm:
 
@@ -405,27 +484,36 @@ Une fois que le système redémarre, on se conecte en __root__.
 
 # 4. Configuration
 
-## Configuration zsh
+## Configuration de fish
 
-1. Installation de oh-my-zsh
+1. Installation de oh-my-fish
 
-Premièrement on télécharger `oh-my-zsh`.
+Premièrement on télécharger `oh-my-fish`.
 
-    sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+    $curl -L https://get.oh-my.fish > install
+    fish install --path=~/.local/share/omf --config=~/.config/omf
 
 2. Installation d'un thème bullet-train
 
 On commence par télécharger le thème
 
-Ensuite pour activer le thème on va dans le fichier `.zshrc`, à ligne ``.
+        omf install https://github.com/kobanyan/bullet-train-fish-theme
+
+Ensuite dans le fichier ```config/fish/config.fish```
+
+        set -g BULLETTRAIN_PROMPT_ORDER \
+        git \
+        context \
+        dir \
+        time
 
 ## Configuration d'un environement de dev
 
-1. Installation de php
+### 1.Installation de php
 
 On commence par installer composer, php et quelque extension de php.
 
-    trizen -S composer php php-{gd,intl,mcrypt,sqlite} phpdox
+    $trizen -S composer php php-{gd,intl,sqlite} phpdox
 
 Pour la configuration de php on va décommenter les ligne suivant dans le fichier /etc/php/php.ini
 
@@ -433,16 +521,17 @@ Pour la configuration de php on va décommenter les ligne suivant dans le fichie
     extension=gd.so
     extension=iconv.so
     extension=intl.so
-    extension=mcrypt.so
     extension=pdo_sqlite.so
     extension=sqlite3.so
 
 Et ont va aussi modifier dans ce même fichier, pour avoir les erreurs lors du dévelloppement
 
     display_errors=On
+
 Une dernière étape pour la configuration de php c'est d'installer xdebug
 
-    pacaur -S xdebug
+    $trizen -S xdebug
+
 Pour activer xdebug il faut décommenter tous les lignes dans le fichier `/etc/php/conf.d/xdebug.ini`
 
     zend_extension=xdebug.so
@@ -451,7 +540,7 @@ Pour activer xdebug il faut décommenter tous les lignes dans le fichier `/etc/p
     xdebug.remote_port=9000
     xdebug.remote_handler=dbgp
 
-2. Installation de mariadb
+### 2.Installation de mariadb
 
 On commence par installer mariadb
 
