@@ -52,13 +52,13 @@ Le but de ce tutoriel est de m'aider à installer archlinux sur mon environement
 
     Pour changer l'agencement du __clavier__, utilisez la commande `loadkeys`.
 
-        loadkeys fr-pc
+        $loadkeys fr-pc
 
 * __Connexion eu réseau wifi__
 
     Sur un ordinateur portable si vous voulez vous connectez en wifi il suffit d'utilisez la commande `wifi-menu`.
 
-        wifi-menu
+        $wifi-menu
 
 ## __Partitionnement du disque__
 
@@ -246,7 +246,7 @@ Pour la selection des mirrors il y a différente méthode ma préferer est la de
 
 * On édite le ficher `/etc/pacman.d/mirrorlist` :
 
-        nano /etc/pacman.d/mirrorlist
+        $nano /etc/pacman.d/mirrorlist
 
 * ensuite avec une combinaison de touche `ALT + R`. On mettra dans un premier temps `Server` (sans les guillemets). Et ensuite `#Server`.
 
@@ -256,22 +256,22 @@ _Le package ```pacman``` met à disposition un script bash, `/usr/bin/rankmirror
 
 * Commençons par créer un fichier de backup de /usr/bin/rankmirrors :
 
-        cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
+        $cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 
 * Editons maintenant le fichier backup. Nous allons décommenter TOUS les miroirs afin que rankmirrors puisse les tester. Pour se faire, sed s'avère très utile.
 
-        sed -s 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
+        $sed -s 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
 
 * Pour finir, nous allons laisser ```rankmirrors``` trouve les 10 meilleurs mirroirs, et écrire le résultat directement dans /etc/pacman.d/mirrorlist
 
-        rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
+        $rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
 
 ## __Installation des paquets de base__
 
 * Il suffit d'utiliser le script `pacstrap` en lui indiquant le dossier correspondant à la racine du système suivi des paquets ou groupes à installer (séparés par un espace). Pour le système de base :
 
-        pacstrap /mnt base base-devel 
-        pacstrap /mnt zip unzip p7zip vim mc alsa-utils syslog-ng mtools dosfstools fish lsb-release ntfs-3g exfat-utils wireless_tools dialog wpa_supplicant wpa_actiond ifplugd sudo git ntp cronie wget curl
+        $pacstrap /mnt base base-devel 
+        $pacstrap /mnt zip unzip p7zip vim mc alsa-utils syslog-ng mtools dosfstools fish lsb-release ntfs-3g exfat-utils wireless_tools dialog wpa_supplicant wpa_actiond ifplugd sudo git ntp cronie wget curl
 
 ### __Configuration du sytème__
 
@@ -355,14 +355,14 @@ Une fois que le système redémarre, on se conecte en __root__.
 
 * On se connecte d'abord à internet avec la commande
 
-        wifi-menu
+        $wifi-menu
 
 * Création d'un compte utilisateur<br />
 
     Avant d'installer nos logiciels préferer, nous allons d'abord créé un compte utilisateur avec la commande suivante:
 
-        useradd -m -g wheel -c 'Nom de l'utilisateur' -s /usr/bin/fish nom-de-l'utilisateur
-        passwd nom-de-l'utilisateur
+        $useradd -m -g wheel -c 'Nom de l'utilisateur' -s /usr/bin/fish nom-de-l'utilisateur
+        $passwd nom-de-l'utilisateur
 
     Avant de finir, on va configurer sudo en utilisant visudo. En effet, il nous suffit de modifier une ligne pour que l'on puisse accèder en tant qu'utilisateur classique aux droits complets sur la machine.
 
@@ -384,9 +384,9 @@ Une fois que le système redémarre, on se conecte en __root__.
 
 * Nous allons installer ```trizen```, car si on veut installer des paquets qui ne sont pas disponible sur les dépots officiel, alors va devoir installer depuis des dépot communautaire.
 
-        git clone git clone https://aur.archlinux.org/trizen.git
-        cd trizen-git
-        makepkg -si
+        $git clone git clone https://aur.archlinux.org/trizen.git
+        $cd trizen-git
+        $makepkg -si
 
 Et maintenant pour le reste du tutoriel, je vais utiliser trizen au lieu de paman pour installer les logicielles et drivers.
 
@@ -398,91 +398,91 @@ Et maintenant pour le reste du tutoriel, je vais utiliser trizen au lieu de pama
 
 * Installation de Xorg
 
-        trizen -S xorg-{server,xinit,apps} xf86-input-{mouse,keyboard,libinput} xdg-user-dirs
+        $trizen -S xorg-{server,xinit,apps} xf86-input-{mouse,keyboard,libinput} xdg-user-dirs
 
 ## Installation des drivers
 
 * On commence par cofigurer les périphérique audio, on lance ```alsamixer```, pour configurer le niveau sonore.
 
-        alsamixer
+        $alsamixer
 
 * En suite on écrit:
 
-        alsactl store
+        $alsactl store
     Pour que la configuration d'alsamixer soit conserver.
 
 ### Imprimantes
 
 * Dans mon cas c'est une imprimante hp, donc:
 
-        trizen -S cups cups-pdf hplip python-pyqt5
+        $trizen -S cups cups-pdf hplip python-pyqt5
 
 ### Installation des pilotes graphiques
 
 * Installation des pilote intel
 
-        trizen -S intel-dri xf86-video-intel lib32-intel-dri
+        $trizen -S intel-dri xf86-video-intel lib32-intel-dri
 
 ### Installation des polices
 
 * C'est une ensemble de polices à installer
 
-        trizen -S ttf-{bitstream-vera,liberation,freefont,dejavu,roboto,cheapskate,arphic-uming,baekmuk,font-awesome}
-        trizen -S xorg-fonts-type1 sdl_ttf gsfonts artwiz-fonts
-        trizen -S font-{bh-ttf,bitstream-speedo}
+        $trizen -S ttf-{bitstream-vera,liberation,freefont,dejavu,roboto,cheapskate,arphic-uming,baekmuk,font-awesome}
+        $trizen -S xorg-fonts-type1 sdl_ttf gsfonts artwiz-fonts
+        $trizen -S font-{bh-ttf,bitstream-speedo}
 
 ## Installation d'un environement de bureau
 
 * Pour ce tutoriel on va installer mate-desktop
 
-        trizen -S mate mate-extra gnome-icon-theme python2-pyinotify accountsservice thunderbird-i18-fr atril ffmpegthumbnailer xscreensaver pavucontrol pulseaudio pulseaudio-alsa libcanberra-{pulse,gstreamer} gtk3-print-backends system-config-printer mate-tweak brisk-menu
+        $trizen -S mate mate-extra gnome-icon-theme python2-pyinotify accountsservice thunderbird-i18-fr atril ffmpegthumbnailer xscreensaver pavucontrol pulseaudio pulseaudio-alsa libcanberra-{pulse,gstreamer} gtk3-print-backends system-config-printer mate-tweak brisk-menu
 
 * Ensuite on installer notre écran de connexion
 
-        trizen -S lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
+        $trizen -S lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
 
 * Pour avoir le bon agencement clavier dès la saisie du premier caractère du mot de passe, il faut entrer la commande suivante avant de lancer pour la première fois lightdm:
 
-        sudo localectl set-x11-keymap fr
+        $sudo localectl set-x11-keymap fr
 * Ensuite on peut lancer l'écran de connexion lightdm et mate avec la commande:
 
-        sudo systemctl start accounts-daemon
-        sudo systemctl start lightdm
+        $sudo systemctl start accounts-daemon
+        $sudo systemctl start lightdm
 
 * Et si tout se passe bien, on peut utiliser
 
-        sudo systemctl enable accounts-daemon
-        sudo systemctl enable lightdm
+        $sudo systemctl enable accounts-daemon
+        $sudo systemctl enable lightdm
 
 ## Installation des logiciels
 
 * Logiciel graphique
 
-        trizen -S gimp gimp-fr inkscape
+        $trizen -S gimp gimp-fr inkscape
 
 * Bureautique
 
-        trizen -S libreoffice-fresh-fr
+        $trizen -S libreoffice-fresh-fr
 
 * Internet
 
-        trizen firefox-i18n-fr chrominium vivaldi-snapshot jdownloader
+        $trizen firefox-i18n-fr chrominium vivaldi-snapshot jdownloader
 
 * Multimédia
 
-        trizen -S vlc mpv spotify molotov
+        $trizen -S vlc mpv spotify molotov
 
 * Editeur de texte:
 
-        trizen -S atom-editor-bin visual-studio-code-bin
+        $trizen -S atom-editor-bin visual-studio-code-bin
 
 * Terminal
 
-        trizen -S deepin-terminal
+        $trizen -S deepin-terminal
 
 * Outils système
 
-        trizen -S spacer
+        $trizen -S spacer
 
 # 4. Configuration
 
@@ -493,7 +493,7 @@ Et maintenant pour le reste du tutoriel, je vais utiliser trizen au lieu de pama
 Premièrement on télécharger `oh-my-fish`.
 
     $curl -L https://get.oh-my.fish > install
-    fish install --path=~/.local/share/omf --config=~/.config/omf
+    $fish install --path=~/.local/share/omf --config=~/.config/omf
 
 2. Installation d'un thème bullet-train
 
@@ -501,7 +501,7 @@ On commence par télécharger le thème
 
         omf install https://github.com/kobanyan/bullet-train-fish-theme
 
-Ensuite dans le fichier ```config/fish/config.fish```
+Ensuite dans le fichier ```.config/fish/config.fish```
 
         set -g BULLETTRAIN_PROMPT_ORDER \
         git \
