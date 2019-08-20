@@ -488,7 +488,9 @@ Et maintenant pour le reste du tutoriel, je vais utiliser trizen au lieu de pama
 
 # 4. Configuration
 
-## Configuration de fish
+## Configuration de fish et vim
+
+### Configuration de fish
 
 1. Installation de oh-my-fish
 
@@ -510,6 +512,94 @@ Ensuite dans le fichier ```.config/fish/config.fish```
         context \
         dir \
         time
+
+### Configuration de vim
+
+1. Preimièrement nous allons commencer par éditer le fichier avec les lignes suivantes:
+
+        set nocompatible
+        filetype plugin on
+        set smartindent
+        set tabstop=4
+        set shiftwidth=4
+        set expandtab
+        " Set VIM history
+        set history=588
+
+        " Enable line number
+        set number
+
+        " Enable highlight syntax
+        syntax enable
+
+        " Set encoding
+        set encoding=utf8
+
+        " Show the current command
+        set showcmd
+
+        set rtp+=/usr/lib/python3.7/site-packages/powerline/bindings/vim/
+        set laststatus=2
+        set t_Co=256
+
+        inoremap {<cr> {<cr>}<c-o><s-o>
+        inoremap [<cr> [<cr>]<c-o><s-o>
+        inoremap (<cr> (<cr>)<c-o><s-o>
+
+2. Ensuite on va configurer vim avec Vundle
+
+ git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+
+Et maintenant dans le fichier `.vimrc` ecrire:
+
+        set nocompatible              " be iMproved, required
+        filetype off                  " required
+
+        " set the runtime path to include Vundle and initialize
+        set rtp+=~/.vim/bundle/Vundle.vim
+        call vundle#begin()
+        " alternatively, pass a path where Vundle should install plugins
+        "call vundle#begin('~/some/path/here')
+
+        " let Vundle manage Vundle, required
+        Plugin 'VundleVim/Vundle.vim'
+
+        " The following are examples of different formats supported.
+        " Keep Plugin commands between vundle#begin/end.
+        " plugin on GitHub repo
+        Plugin 'tpope/vim-fugitive'
+        " plugin from http://vim-scripts.org/vim/scripts.html
+        " Plugin 'L9'
+        " Git plugin not hosted on GitHub
+        Plugin 'git://git.wincent.com/command-t.git'
+        " git repos on your local machine (i.e. when working on your own plugin)
+        Plugin 'file:///home/gmarik/path/to/plugin'
+        " The sparkup vim script is in a subdirectory of this repo called vim.
+        " Pass the path to set the runtimepath properly.
+        Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+        " Install L9 and avoid a Naming conflict if you've already installed a
+        " different version somewhere else.
+        " Plugin 'ascenator/L9', {'name': 'newL9'}
+
+        " All of your Plugins must be added before the following line
+        call vundle#end()            " required
+        filetype plugin indent on    " required
+        " To ignore plugin indent changes, instead use:
+        "filetype plugin on
+        "
+        " Brief help
+        " :PluginList       - lists configured plugins
+        " :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+        " :PluginSearch foo - searches for foo; append `!` to refresh local cache
+        " :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+        "
+        " see :h vundle for more details or wiki for FAQ
+        " Put your non-Plugin stuff after this line
+
+3. Et pour terminer ont va installer les plugins, avec la commande
+
+        :PluginInstall
+Dans vim.
 
 ## Configuration d'un environement de dev
 
