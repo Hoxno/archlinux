@@ -15,7 +15,7 @@ BEGIN
            1. [Pour un disque dur ou un ssd](#)
            1. [Pour un disque ssd NVME](#)
 1. [Installation de la base](#2-instalation-du-sytème-de-base)
-   1. [Selection du miroir](#)
+   1. [Selection du miroir](#selection-du-miroir)
         1. [Première méthode (plus simple)](#première-méthode-plus-simple)
         1. [Deuxième méthode](#deuxième-méthode)
         1. [Installation des paquets de base](#installation-des-paquets-de-base)
@@ -96,7 +96,7 @@ __Pour un dique dur ou un ssd__
         $mkdir /mnt/boot
         $mount /dev/sda3 /mnt/boot
 
-__Pour le d'un ssd nvme__
+### Pour le d'un ssd nvme
 
 * Patitionnement du disque pour une installation en dual boot avec windows 10.
 
@@ -128,7 +128,7 @@ __Pour le d'un ssd nvme__
 
 ## Cas d'un boot seul
 
-__Pour un dique dur ou un ssd__
+### Pour un dique dur ou un ssd
 
 | Nom de la Partition | Taille | Format | Type |
 | :----------- | :------: | :-------: | :------|
@@ -145,7 +145,7 @@ __Pour un dique dur ou un ssd__
 
         $cgdisk /dev/sda1
 
-__Pour une table de partition MBR__
+### Pour une table de partition MBR
 
 * Ensuite on va formater nos partition qu'on a créé précedement
 
@@ -157,12 +157,13 @@ __Pour une table de partition MBR__
 
         $mkswap /dev/sda2
 
-__Pour une table de partition GPT__
+### Pour une table de partition GPT
 
 Pour une table GPT, le formatage est le même que pour une table MBR.
 
         $mkfs.vfat -F32 /dev/sda1
-__Montage des partitions__
+
+### Montage des partitions
 
 Il faut monter les partitions précedement créées sous le dossier /mnt afin d'y installer le système. On utilise la commande ```mount```:
 
@@ -174,7 +175,7 @@ La partition swap doit être également activé pour être détecté lors de la 
 
         $swapon /dev/sda2
 
-__Pour le d'un ssd nvme__
+### Pour le d'un ssd nvme
 
 | Nom de la Partition | Taille | Format | Type |
 | :----------- | :------: | :-------: | :------|
@@ -191,7 +192,7 @@ __Pour le d'un ssd nvme__
 
         $cgdisk (nom du volume)
 
-__Pour une table de partition MBR__
+### Pour une table de partition MBR
 
 * Ensuite on va formater nos partition qu'on a créé précedement
 
@@ -203,12 +204,13 @@ __Pour une table de partition MBR__
 
         $mkswap /dev/nvme0n1p2
 
-__Pour une table de partition GPT__
+### Pour une table de partition GPT
 
 Pour une table GPT, le formatage est le même que pour une table MBR.
 
         $mkfs.vfat -F32 /dev/nvme0n1p1
-__Montage des partitions__
+
+### Montage des partitions
 
 * Pour un ssd ou disque dur
 
