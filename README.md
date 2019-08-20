@@ -7,38 +7,40 @@ BEGIN
 
 0. [Introduction](#introduction)
 1. [Préparation](#1-préparation)
-   1. [Partitionnement du disque ]()
+   1. [Partitionnement du disque ](#partitionnement-du-disque)
         1. [Cas d'un dual boot](#cas-dun-dual-boot)
-           1. [Pour un disque dur ou un ssd]()
-           1. [Pour un disque ssd NVME]()
+           1. [Pour un disque dur ou un ssd](#)
+           1. [Pour un disque ssd NVME](#)
         1. [Cas d'un boot seul](#cas-dun-boot-seul)
-           1. [Pour un disque dur ou un ssd]()
-           1. [Pour un disque ssd NVME]()
+           1. [Pour un disque dur ou un ssd](#)
+           1. [Pour un disque ssd NVME](#)
 1. [Installation de la base](#2-instalation-du-sytème-de-base)
-   1. [Selection du miroir]()
-        1. [Première méthode (plus simple)]()
-        1. [Deuxième méthode]()
-        1. [Installation des paquets de base]()
-        1. [Configuration du sytème]()
-        1. [Installation d'un bootloader]()
-           1. [En version Bios]()
-           1. [En version UEFI]()
-        1. [Redémmarage]()
+   1. [Selection du miroir](#)
+        1. [Première méthode (plus simple)](#première-méthode-plus-simple)
+        1. [Deuxième méthode](#deuxième-méthode)
+        1. [Installation des paquets de base](#installation-des-paquets-de-base)
+        1. [Configuration du sytème](#configuration-du-sytème)
+        1. [Installation d'un bootloader](#installation-dun-bootloader)
+           1. [En version Bios](#version-bios)
+           1. [En version UEFI](#version-uefi)
+        1. [Redémmarage](#redémmarage)
 1. [Configurations du systèmes](#3-configuration-du-système)
-    1. [En cours de finalisation]()
-    1. [En cours de finalisation]()
-    1. [En cours de finalisation]()<br/>
-       1. [En cours de finalisation]()
-       1. [En cours de finalisation]()
-       1. [En cours de finalisation]()
-    1. [En cours de finalisation]()
-    1. [En cours de finalisation]()
+    1. [Installation de trizen](#installation-de-trizen)
+    1. [Installation des plugins multimédia](#installation-des-plugins-multimédia)
+    1. [Installation des drivers](#nstallation-des-drivers)<br/>
+       1. [Imprimantes](#imprimantes)
+       1. [Installation des pilotes graphiques](#installation-des-pilotes-graphiques)
+       1. [Installation des polices](#installation-des-polices)
+    1. [Installation d'un environement de bureau](#installation-dun-environement-de-bureau)
+    1. [Installation des logiciels](#installation-des-logiciels)
 1. [Configuration](#4-configuration)
-    1. [En cours de finalisation]()
-    1. [En cours de finalisation]()
-    1. [En cours de finalisation]()
-    1. [En cours de finalisation]()
-    1. [En cours de finalisation]()
+    1. [Configuration de fish](#configuration-de-fish)
+    1. [Configuration d'un environement de dev](#configuration-dun-environement-de-dev)
+        1. [Installation de PHP](#installation-de-php)
+        1. [Installation de mariadb](#installation-de-mariadb)
+    1. [En cours de finalisation](#)
+    1. [En cours de finalisation](#)
+    1. [En cours de finalisation](#)
 
 # Introduction
 
@@ -321,7 +323,7 @@ Pour une configuration de base:
 
 ## __Installation d'un bootloader__
 
-##__(Version bios)__
+### (Version bios)
 
 * Il faut installer les paquets `grub` et `os-prober` pour le dualboot:
 
@@ -333,7 +335,7 @@ Pour une configuration de base:
 
         $grub-mkconfig -o /boot/grub/grub.cfg
 
-##__(Version UEFI)__
+###(Version UEFI)
 
 ## __Redémmarage__
 
@@ -509,7 +511,7 @@ Ensuite dans le fichier ```config/fish/config.fish```
 
 ## Configuration d'un environement de dev
 
-### 1.Installation de php
+### Installation de php
 
 On commence par installer composer, php et quelque extension de php.
 
@@ -540,7 +542,7 @@ Pour activer xdebug il faut décommenter tous les lignes dans le fichier `/etc/p
     xdebug.remote_port=9000
     xdebug.remote_handler=dbgp
 
-### 2.Installation de mariadb
+### Installation de mariadb
 
 On commence par installer mariadb
 
